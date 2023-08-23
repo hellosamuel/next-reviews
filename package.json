@@ -2,7 +2,9 @@
   "name": "next-reviews",
   "private": true,
   "scripts": {
-    "dev": "next dev"
+    "build": "next build",
+    "dev": "next dev",
+    "start": "next start"
   },
   "dependencies": {
     "next": "^13.4.18",
@@ -13,5 +15,10 @@
     "printWidth": 100,
     "semi": false,
     "singleQuote": true
+  },
+  "devDependencies": {
+    "@types/node": "20.5.0",
+    "@types/react": "18.2.20",
+    "typescript": "5.1.6"
   }
 }
