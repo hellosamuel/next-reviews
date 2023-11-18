@@ -14,6 +14,7 @@ interface ReviewPageProps {
 
 export async function generateStaticParams(): Promise<ReviewPageParams[]> {
   const slugs = await getSlugs()
+  console.log('[ReviewPage] generateStaticParams:', slugs)
   return slugs.map(slug => ({ slug }))
 }
 
@@ -26,7 +27,6 @@ export async function generateMetadata({ params: { slug } }: ReviewPageProps): P
 
 export default async function ReviewPage({ params: { slug } }: ReviewPageProps) {
   const review = await getReview(slug)
-  console.log('[ReviewPage] rendering', slug)
 
   return (
     <>
