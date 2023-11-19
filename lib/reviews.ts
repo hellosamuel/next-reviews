@@ -3,6 +3,8 @@ import matter from 'gray-matter'
 import { marked } from 'marked'
 import qs from 'qs'
 
+export const CACHE_TAG_REVIEWS = 'reviews'
+
 const CMS_URL = 'http://localhost:1337'
 
 export interface CmsItem {
@@ -28,6 +30,8 @@ export async function getReview(slug: string): Promise<FullReview> {
     populate: { image: { fields: ['url'] } },
     pagination: { pageSize: 1, withCount: false }
   })
+  if (data.length === 0) return null
+
   const item = data[0]
 
   return {
@@ -59,7 +63,7 @@ export async function getSlugs(): Promise<string[]> {
 
 async function fetchReviews(parameters: any) {
   const url = `${CMS_URL}/api/reviews?` + qs.stringify(parameters, { encodeValuesOnly: true })
-  const response = await fetch(url)
+  const response = await fetch(url, { next: { tags: [CACHE_TAG_REVIEWS] } })
   if (!response.ok) {
     throw new Error(`CMS returned ${response.status} for ${url}`)
   }
