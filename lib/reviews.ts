@@ -1,5 +1,3 @@
-import { readdir, readFile } from 'node:fs/promises'
-import matter from 'gray-matter'
 import { marked } from 'marked'
 import qs from 'qs'
 
@@ -23,6 +21,12 @@ export interface Review {
 export interface FullReview extends Review {
   body: string
 }
+
+export interface PaginatedReviews {
+  reviews: Review[]
+  pageCount: number
+}
+
 export async function getReview(slug: string): Promise<FullReview> {
   const { data } = await fetchReviews({
     filters: { slug: { $eq: slug } },
@@ -40,15 +44,18 @@ export async function getReview(slug: string): Promise<FullReview> {
   }
 }
 
-export async function getReviews(pageSize: number): Promise<Review[]> {
-  const { data } = await fetchReviews({
+export async function getReviews(pageSize: number, page?: number): Promise<PaginatedReviews> {
+  const { data, meta } = await fetchReviews({
     fields: ['slug', 'title', 'subtitle', 'publishedAt'],
     populate: { image: { fields: ['url'] } },
     sort: ['publishedAt:desc'],
-    pagination: { pageSize }
+    pagination: { pageSize, page }
   })
 
-  return data.map(toReview)
+  return {
+    reviews: data.map(toReview),
+    pageCount: meta.pagination.pageCount
+  }
 }
 
 export async function getSlugs(): Promise<string[]> {

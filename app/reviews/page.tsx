@@ -4,17 +4,26 @@ import Image from 'next/image'
 
 import Heading from '@/components/Heading'
 import { getReviews } from '@/lib/reviews'
+import PaginationBar from '@/components/PaginationBar'
 
 export const metadata: Metadata = {
   title: 'Reviews'
 }
 
-export default async function ReviewsPage() {
-  const reviews = await getReviews(6)
+interface ReviewsPageProps {
+  searchParams: { page?: string }
+}
+
+const PAGE_SIZE = 6
+
+export default async function ReviewsPage({ searchParams }: ReviewsPageProps) {
+  const page = parsePageParam(searchParams.page)
+  const { reviews, pageCount } = await getReviews(PAGE_SIZE, page)
 
   return (
     <>
       <Heading>Reviews</Heading>
+      <PaginationBar href="/reviews" page={page} pageCount={pageCount} />
       <ul className="flex flex-wrap gap-3">
         {reviews.map((review, index) => (
           <li key={review.slug} className="bg-white border rounded shadow w-80 hover:shadow-xl">
@@ -34,4 +43,15 @@ export default async function ReviewsPage() {
       </ul>
     </>
   )
+}
+
+function parsePageParam(paramValue: string) {
+  if (paramValue) {
+    const page = parseInt(paramValue, 10)
+    if (isFinite(page) && page > 0) {
+      return page
+    }
+  }
+
+  return 1
 }
