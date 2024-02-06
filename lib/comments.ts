@@ -12,6 +12,7 @@ export async function createComment({ slug, user, message }: CreateCommentData) 
 
 export async function getComments(slug: string) {
   return await db.comment.findMany({
-    where: { slug }
+    where: { slug },
+    orderBy: { postedAt: 'desc' },
   })
 }
